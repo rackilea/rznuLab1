@@ -26,7 +26,7 @@ public class GroupController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping(path = "/groups")
+    @PostMapping(path = "/api/v1/groups")
     public ResponseEntity<GroupDto> createGroup(@RequestBody @Valid CreateGroupDto createGroupDto) {
         Optional<Group> duplicate = groupRepository.findByName(createGroupDto.getName());
         if (duplicate.isPresent()) {
@@ -37,7 +37,14 @@ public class GroupController {
         return ResponseEntity.ok(new GroupDto(group.getId(), group.getName(), group.getDescription()));
     }
 
-    @GetMapping(path = "/groups/{id}")
+    @GetMapping(path = "/api/v1/groups")
+    public ResponseEntity<List<GroupDto>> getAllGroups() {
+        List<GroupDto> groupDtoList = groupRepository.findAll().stream().map(group -> new GroupDto(group.getId(), group.getName(), group.getDescription())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(groupDtoList);
+    }
+
+    @GetMapping(path = "/api/v1/groups/{id}")
     public ResponseEntity<GroupDto> getById(
             @PathVariable("id") long groupId) {
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -48,7 +55,7 @@ public class GroupController {
         return ResponseEntity.ok(new GroupDto(group.getId(), group.getName(), group.getDescription()));
     }
 
-    @DeleteMapping(path = "/groups/{id}")
+    @DeleteMapping(path = "/api/v1/groups/{id}")
     public ResponseEntity deleteGroup(
             @PathVariable("id") long groupId) {
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -59,7 +66,7 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path = "/groups/{id}")
+    @PutMapping(path = "/api/v1/groups/{id}")
     public ResponseEntity<GroupDto> updateGroup(
             @PathVariable("id") long groupId,
             @RequestBody @Valid CreateGroupDto createGroupDto) {
@@ -80,7 +87,7 @@ public class GroupController {
         return ResponseEntity.ok(new GroupDto(group.getId(), group.getName(), group.getDescription()));
     }
 
-    @GetMapping(path = "/groups/{id}/users")
+    @GetMapping(path = "/api/v1/groups/{id}/users")
     public ResponseEntity<List> getGroupUsers(
             @PathVariable("id") long groupId) {
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -93,7 +100,7 @@ public class GroupController {
         return ResponseEntity.ok(userDtoList);
     }
 
-    @PostMapping(path = "/groups/{groupId}/users/{userId}")
+    @PostMapping(path = "/api/v1/groups/{groupId}/users/{userId}")
     public ResponseEntity addUserToGroup(@PathVariable("groupId") long groupId,
                                          @PathVariable("userId") long userId
     ) {
@@ -116,7 +123,7 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path = "/groups/{groupId}/users/{userId}")
+    @DeleteMapping(path = "/api/v1/groups/{groupId}/users/{userId}")
     public ResponseEntity removeUserFromGroup(@PathVariable("groupId") long groupId,
                                               @PathVariable("userId") long userId
     ) {
@@ -134,6 +141,5 @@ public class GroupController {
         groupRepository.save(group);
         return ResponseEntity.ok().build();
     }
-
 
 }

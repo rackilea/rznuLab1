@@ -8,22 +8,14 @@ public class UserDto {
     private String email;
     private String name;
     private String surname;
-    private List<Long> groups = new ArrayList<>();
+    private List<Long> groupIds = new ArrayList<>();
 
-    public UserDto(Long id, String email, String name, String surname, List<Long> groups) {
+    public UserDto(Long id, String email, String name, String surname, List<Long> groupIds) {
         this.id = id;
         this.email = email;
         this.surname = surname;
         this.name = name;
-        this.groups = groups;
-    }
-
-    public List<Long> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Long> groups) {
-        this.groups = groups;
+        this.groupIds = groupIds;
     }
 
     public UserDto(Long id, String email, String name, String surname) {
@@ -66,5 +58,13 @@ public class UserDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Long> getGroupIds() {
+        return groupIds;
+    }
+
+    public void setGroupIds(List<Long> groupIds) {
+        this.groupIds = groupIds;
     }
 }

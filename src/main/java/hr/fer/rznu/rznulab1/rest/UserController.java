@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @Transactional
@@ -20,8 +22,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping(path = "/users")
-    public ResponseEntity<UserDto> createGroup(@RequestBody @Valid CreateUserDto createUserDto) {
+    @PostMapping(path = "/api/v1/users")
+    public ResponseEntity<UserDto> createUser(@RequestBody @Valid CreateUserDto createUserDto) {
         Optional<User> duplicate = userRepository.findByEmail(createUserDto.getEmail());
         if (duplicate.isPresent()) {
             return ResponseEntity.badRequest().build();
@@ -32,7 +34,14 @@ public class UserController {
         return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail(), user.getName(), user.getSurname()));
     }
 
-    @GetMapping(path = "/users/{id}")
+    @GetMapping(path = "/api/v1/users")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> userDtoList = userRepository.findAll().stream().map(user -> new UserDto(user.getId(), user.getEmail(), user.getName(), user.getSurname())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDtoList);
+    }
+
+    @GetMapping(path = "/api/v1/users/{id}")
     public ResponseEntity<UserDto> getById(
             @PathVariable("id") long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -43,12 +52,10 @@ public class UserController {
         return ResponseEntity.ok(new UserDto(user.getId(), user.getEmail(), user.getName(), user.getSurname()));
     }
 
-
-
-    @DeleteMapping(path = "/users/{id}")
-    public ResponseEntity deleteGroup(
-            @PathVariable("id") long groupId) {
-        Optional<User> optionalUser = userRepository.findById(groupId);
+    @DeleteMapping(path = "/api/v1/users/{id}")
+    public ResponseEntity deleteUser(
+            @PathVariable("id") long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -56,8 +63,8 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path = "/users/{id}")
-    public ResponseEntity<UserDto> updateGroup(
+    @PutMapping(path = "/api/v1/users/{id}")
+    public ResponseEntity<UserDto> updateUser(
             @PathVariable("id") long userId,
             @RequestBody @Valid CreateUserDto createUserDto) {
         Optional<User> optionalUser = userRepository.findByEmail(createUserDto.getName());
